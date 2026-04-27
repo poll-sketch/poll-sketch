@@ -13,3 +13,6 @@ git push
 #第一次推送这个仓库，设置远程地址
 git remote add origin https://github.com/你的用户名/仓库名.git
 git push -u origin main
+
+md文件转换为PDF
+pandoc 实验报告1.md -o 实验报告1.pdf -M title="实验报告一：基础LLM客户端开发与交互式聊天终端实现" --latex-engine=xelatex -V documentclass=ctexart -V geometry:a4paper -V geometry:margin=2.54cm
