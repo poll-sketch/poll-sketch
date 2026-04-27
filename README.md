@@ -18,6 +18,10 @@
 │   └── search_chat_client.py  # 聊天历史5W提取与搜索客户端实现
 ├── practice05/         # 实践案例目录
 │   └── tool_client.py  # AnythingLLM文档仓库访问客户端实现
+├── practice06/         # 实践案例目录
+│   ├── tool_client.py  # 技能管理客户端实现
+│   └── .agents/        # 技能目录
+│       └── skills/      # 技能存储目录
 ├── requirements/       # 依赖配置
 │   └── base.txt        # 基础依赖包
 ├── venv/               # 虚拟环境
@@ -165,7 +169,40 @@
   - ANYTHINGLLM_API_KEY: AnythingLLM的API密钥
   - ANYTHINGLLM_WORKSPACE_SLUG: 工作区的Slug ID
 
-### 9. requirements/base.txt
+### 9. practice06/tool_client.py
+
+**功能用途：**
+- 实现了一个支持技能管理的AI智能体
+- 能够自动读取和管理 `.agents/skills` 目录下的技能
+- 支持将技能列表以JSON格式通过system prompt发送给LLM
+- 当LLM判断需要使用某个技能时，能够加载该技能的详细内容
+
+**核心功能：**
+- 继承了practice05的所有功能
+- `list_available_skills()`: 读取 `.agents/skills` 目录下的所有技能配置
+- `load_skill_content()`: 加载指定技能的详细内容
+- 自动扫描和更新技能列表
+- 支持技能的热更新
+- 智能技能查找，基于YAML front matter中的name字段
+
+**技能文件格式：**
+技能文件必须遵循以下格式：
+```markdown
+---
+name: "技能名称"
+description: "技能描述"
+---
+
+## 技能正文
+
+这里是技能的详细内容...
+```
+
+**示例技能：**
+- **文件分析**：分析指定文件的内容，提取关键信息和统计数据
+- **网络搜索**：在互联网上搜索相关信息，提供搜索结果摘要
+
+### 10. requirements/base.txt
 
 **功能用途：**
 - 列出AI智能体开发所需的基础依赖包
@@ -232,6 +269,12 @@
     - 学习如何实现聊天历史的搜索功能
     - 掌握多种搜索触发方式的实现
     - 理解上下文感知搜索的重要性
+
+13. **技能管理系统**
+    - 学习如何开发一个技能管理系统
+    - 掌握YAML front matter的解析方法
+    - 理解技能的自动发现和加载机制
+    - 学习如何将技能信息传递给LLM
 
 ## 使用方法
 
@@ -305,6 +348,15 @@ venv\Scripts\Activate.ps1
 python practice05/tool_client.py
 ```
 
+**运行技能管理终端：**
+```bash
+# 激活虚拟环境（Windows）
+venv\Scripts\Activate.ps1
+
+# 运行技能管理终端
+python practice06/tool_client.py
+```
+
 ### 3. 5W聊天历史功能说明
 
 **聊天历史存储位置：** D:\chat-log\log.txt
@@ -321,7 +373,29 @@ python practice05/tool_client.py
 2. 表达查找意图，如：`查找聊天历史`、`搜索聊天记录`
 3. LLM根据上下文自动判断需要搜索历史
 
-### 4. 自定义提示词
+### 4. 技能管理功能说明
+
+**技能存储位置：** `practice06/.agents/skills/` 目录
+
+**技能文件格式：** 每个技能需要在独立的子目录中创建 `SKILL.md` 文件
+
+**技能文件结构：**
+```markdown
+---
+name: "技能名称"
+description: "技能描述"
+---
+
+## 技能正文
+
+这里是技能的详细内容...
+```
+
+**技能调用方式：**
+1. LLM可以通过 `list_available_skills()` 工具获取可用技能列表
+2. LLM可以通过 `load_skill_content(skill_name)` 工具加载指定技能的详细内容
+
+### 5. 自定义提示词
 
 - **基础客户端**：修改`llm_client.py`中的`prompt`变量
 - **聊天终端**：直接在终端中输入消息即可
@@ -346,6 +420,9 @@ python practice05/tool_client.py
 - **增量存储**：聊天历史支持增量更新
 - **AnythingLLM集成**：支持与本地AnythingLLM服务集成，查询文档仓库
 - **仓库感知**：当提到仓库相关关键词时自动调用AnythingLLM查询
+- **技能管理**：支持技能的自动发现、加载和管理
+- **热更新**：技能支持热更新，无需重启系统
+- **智能查找**：基于YAML front matter中的name字段查找技能
 
 ## 后续扩展
 
@@ -358,6 +435,9 @@ python practice05/tool_client.py
 5. 集成其他AI服务和工具
 6. 支持更多格式的信息提取
 7. 实现跨会话的聊天历史管理
+8. 开发更多技能模板和示例
+9. 实现技能的版本管理和依赖关系
+10. 添加技能的权限管理和安全控制
 
 ## 教学建议
 
@@ -365,6 +445,7 @@ python practice05/tool_client.py
 2. **实践为主**：通过修改代码和配置，实际体验LLM的调用过程
 3. **性能分析**：分析不同模型和参数对性能的影响
 4. **扩展应用**：鼓励学习者基于此框架开发更复杂的AI应用
+5. **技能开发**：引导学习者创建自己的技能，扩展系统功能
 
 ---
 
