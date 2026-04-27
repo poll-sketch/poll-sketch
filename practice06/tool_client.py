@@ -325,7 +325,8 @@ def list_available_skills():
     """
     try:
         skills = []
-        project_root = os.path.dirname(os.path.dirname(__file__))
+        # 使用当前目录（practice06）作为项目根目录
+        project_root = os.path.dirname(__file__)
         skills_dir = os.path.join(project_root, '.agents', 'skills')
         
         if os.path.exists(skills_dir) and os.path.isdir(skills_dir):
@@ -373,34 +374,50 @@ def list_available_skills():
 def load_skill_content(skill_name):
     """
     加载指定技能的SKILL.md文件正文内容（YAML front matter之后的部分）
-    参数：skill_name - 技能名称
+    参数：skill_name - 技能名称（YAML front matter中的name字段）
     返回：技能正文内容
     """
     try:
-        project_root = os.path.dirname(os.path.dirname(__file__))
+        # 使用当前目录（practice06）作为项目根目录
+        project_root = os.path.dirname(__file__)
         skills_dir = os.path.join(project_root, '.agents', 'skills')
-        skill_dir = os.path.join(skills_dir, skill_name)
-        skill_file = os.path.join(skill_dir, 'SKILL.md')
         
-        if not os.path.exists(skill_file) or not os.path.isfile(skill_file):
+        if not os.path.exists(skills_dir) or not os.path.isdir(skills_dir):
             return {
                 "status": "error",
-                "message": f"技能文件不存在: {skill_file}"
+                "message": f"技能目录不存在: {skills_dir}"
             }
         
-        # 读取SKILL.md文件
-        with open(skill_file, 'r', encoding='utf-8') as f:
-            content = f.read()
-        
-        # 提取正文内容（YAML front matter之后的部分）
-        if content.startswith('---'):
-            front_matter_end = content.find('---', 3)
-            if front_matter_end != -1:
-                content = content[front_matter_end + 3:].strip()
+        # 遍历所有技能目录，查找匹配的技能名称
+        for dir_name in os.listdir(skills_dir):
+            skill_dir = os.path.join(skills_dir, dir_name)
+            if os.path.isdir(skill_dir):
+                skill_file = os.path.join(skill_dir, 'SKILL.md')
+                if os.path.exists(skill_file) and os.path.isfile(skill_file):
+                    # 读取SKILL.md文件
+                    with open(skill_file, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                    
+                    # 提取YAML front matter中的name字段
+                    if content.startswith('---'):
+                        front_matter_end = content.find('---', 3)
+                        if front_matter_end != -1:
+                            front_matter = content[3:front_matter_end].strip()
+                            for line in front_matter.split('\n'):
+                                line = line.strip()
+                                if line.startswith('name:'):
+                                    current_name = line[5:].strip().strip('"')
+                                    if current_name == skill_name:
+                                        # 找到匹配的技能，提取正文内容
+                                        content = content[front_matter_end + 3:].strip()
+                                        return {
+                                            "status": "success",
+                                            "data": content
+                                        }
         
         return {
-            "status": "success",
-            "data": content
+            "status": "error",
+            "message": f"未找到名称为 '{skill_name}' 的技能"
         }
     except Exception as e:
         return {
