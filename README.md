@@ -22,6 +22,9 @@
 │   ├── tool_client.py  # 技能管理客户端实现
 │   └── .agents/        # 技能目录
 │       └── skills/      # 技能存储目录
+├── practice07/         # 实践案例目录
+│   ├── tool_client.py  # 链式工具调用客户端实现
+│   └── test_chained_calls.py  # 链式调用测试脚本
 ├── requirements/       # 依赖配置
 │   └── base.txt        # 基础依赖包
 ├── venv/               # 虚拟环境
@@ -208,7 +211,52 @@ description: "技能描述"
 - 格式为"XX部通知"，例如"采购部通知"、"宣传部通知"等
 - 如果用户没有告知所在部门，使用"XX部"代替
 
-### 10. requirements/base.txt
+### 10. practice07/tool_client.py
+
+**功能用途：**
+- 实现了一个支持链式工具调用（Chained Tool Calls）的AI智能体
+- 前一个工具的输出可以作为后一个工具的输入参数
+- LLM能够根据中间结果自主决定下一步工具调用
+- 支持复杂任务的多步骤处理
+
+**核心功能：**
+- 继承了practice06的所有功能
+- `ChainedCallContext`类：链式调用上下文管理器，记录每一步的调用和结果，存储中间变量
+- `build_analysis_prompt()`: 构建分析提示词，指导LLM进行决策
+- `execute_chained_tool_call()`: 执行链式工具调用的完整流程
+
+**链式调用上下文管理器（ChainedCallContext）：**
+- 记录每一步的工具调用和结果
+- 存储中间变量供后续步骤使用
+- 设置最大迭代次数，防止无限循环
+- 提供调用历史和状态管理
+
+**链式调用执行流程：**
+1. 初始化消息历史，包含system prompt
+2. 循环最多`max_iterations`次：
+   - 构建分析提示词（包含用户请求和已执行的步骤历史）
+   - 调用LLM决定下一步操作
+   - 解析LLM响应（支持JSON格式）
+   - 如果任务完成，返回最终回答
+   - 如果需继续调用，执行工具并记录到上下文
+   - 将结果添加到消息历史，继续下一轮
+
+**LLM输出格式要求：**
+- **完成任务时**：
+  ```json
+  {"done": true, "answer": "最终回答内容"}
+  ```
+- **继续调用工具时**：
+  ```json
+  {"done": false, "tool_call": {"name": "工具名称", "arguments": {"参数名": "参数值"}}}
+  ```
+
+**链式调用示例：**
+- **场景1（文件搜索）**：用户请求"请查找practice06目录下所有包含'def'关键词的文件"，系统会依次调用list_directory→read_file→分析→返回结果
+- **场景2（技能查询）**：用户请求"我想了解notice技能的详细规则"，系统会调用list_available_skills→load_skill_content→返回结果
+- **场景3（网页处理）**：用户请求"访问网页并总结内容保存到文件"，系统会调用fetch_webpage→分析→create_file→返回结果
+
+### 11. requirements/base.txt
 
 **功能用途：**
 - 列出AI智能体开发所需的基础依赖包
@@ -281,6 +329,13 @@ description: "技能描述"
     - 掌握YAML front matter的解析方法
     - 理解技能的自动发现和加载机制
     - 学习如何将技能信息传递给LLM
+
+14. **链式工具调用**
+    - 学习如何实现链式工具调用功能
+    - 掌握上下文管理器的设计和实现
+    - 理解中间变量的传递和管理机制
+    - 学习如何设计迭代决策流程
+    - 掌握防止无限循环的方法
 
 ## 使用方法
 
@@ -361,6 +416,24 @@ venv\Scripts\Activate.ps1
 
 # 运行技能管理终端
 python practice06/tool_client.py
+```
+
+**运行链式工具调用终端：**
+```bash
+# 激活虚拟环境（Windows）
+venv\Scripts\Activate.ps1
+
+# 运行链式工具调用终端
+python practice07/tool_client.py
+```
+
+**运行链式调用测试：**
+```bash
+# 激活虚拟环境（Windows）
+venv\Scripts\Activate.ps1
+
+# 运行链式调用测试
+python practice07/test_chained_calls.py
 ```
 
 ### 3. 5W聊天历史功能说明
