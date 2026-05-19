@@ -466,24 +466,3 @@ def test_skill_loading():
 [7] CORREIA A P, HICKEY S, XU F. Realizing the possibilities of the large language models: Strategies for prompt engineering in educational inquiries[J]. Theory Into Practice, 2025, 64(4): 434-447. https://doi.org/10.1080/00405841.2025.2528545
 
 [8] GUZDIAL M. Programming for All: Making the Case for Python[J]. Communications of the ACM, 2018, 61(11): 33-35. https://doi.org/10.1145/3274855
-
----
-
-## 附录
-
-### 附录 A：作者信息
-
-- 姓名：[待填写]
-- 学校：[待填写]
-- 专业：[待填写]
-- 联系方式：[待填写]
-
-### 附录 B：项目仓库
-
-- GitHub 地址：[待填写]
-- 讲义版本：v1.0
-- 最后更新：2026 年 5 月
-
-### 附录 C：致谢
-
-感谢课程指导教师提供的宝贵建议，感谢参与试点学习的 20 位同学的热情反馈。
